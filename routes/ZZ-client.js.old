@@ -1,0 +1,112 @@
+//  ./app/routes/client.js
+// Manages Clients for each user
+
+// Load required packages
+var User = require('../models/usermodel');
+
+// Create endpoint /clients for POST
+exports.createClient = function(req, res) {
+  // Create a new instance of the Client model
+  var client = {
+    clientID: req.body.clientID,
+    clientName: req.body.clientName,
+    clientContact: req.body.clientContact,
+    email: req.body.email,
+    phone: req.body.phone,
+    website: req.body.website,
+    clientNotes: req.body.clientNotes,
+    secret: req.body.secret
+  };
+    
+  User.findOne({"username": req.params.user}, function(err, user){
+    if (err) { res.status(400).send(err); }
+ 
+    if (inObject(user.clients, client.clientID)){
+      // app already exists
+      res.status(400).json("{error: Client already exists}");
+    }
+    else {    
+      user.clients.push(client);				
+      user.save(function(err, newUser) {
+        if (err)
+          res.status(400).send(err);
+        res.status(200).json(newUser);
+      });
+    }
+  });
+};
+
+
+exports.updateClient = function(req, res) {
+
+  // Create new object
+  var client = {
+    clientID: req.params.client,
+    clientName: req.body.clientName,
+    clientContact: req.body.clientContact,
+    email: req.body.email,
+    phone: req.body.phone,
+    website: req.body.website,
+    clientNotes: req.body.clientNotes,
+    secret: req.body.secret
+  };
+  
+  usr = User.where({username: req.params.user});  
+    
+  usr.update({ "clients.clientID": req.params.client}, { $set: {"clients.$": client}}, function(err, newUser){
+    
+    if (err) { res.status(400).send(err); }
+    
+    res.status(200).json({"status":"successful"});  
+  }); 
+
+};
+
+exports.deleteClient = function(req, res) {
+ User.update({"username": req.params.user},{ $pull: { "clients" : { clientID: req.params.client }}}, function(err, user){
+    if (err)
+      res.status(400).send(err);
+    res.status(200).json({"status":"successful"});
+  });
+};
+
+  
+
+
+
+
+
+
+
+  
+  
+// Create endpoint /clients for GET
+exports.listClients = function(req, res) {
+  Client.find(req.body.userID, function(err, clients){
+    if (err)
+      res.status(400).send(err);
+    res.status(200).json(clients);
+  });
+};
+
+// Get client by ID?
+exports.getClient = function(req, res) {
+  Client.findByID(req.body.id, function(err, found){
+    if (err)
+      res.status(400).send(err);
+    res.status(200).json(found);
+  });
+};
+
+
+
+
+
+
+function inObject(arr, search) {
+  var len = arr.length;
+  while (len-- ) {
+    if(arr[len].clientID === search)
+      return true;
+  }
+}

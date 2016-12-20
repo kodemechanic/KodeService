@@ -1,0 +1,113 @@
+/* Service API */
+var User = require('../models/usermodel'); 
+var async = require('async');
+var db = require('../config/database');
+ 
+exports.pre = function(){
+  return function(req, res, next){
+    // This function can be used to Process EVERY call to the /:ownerName/:appName path
+    next();
+  }
+};
+
+exports.createApp = function(req, res) {
+
+  User.findOne({"username": req.params.user}, function(err, user){
+    if (err) { res.status(400).send(err); }
+    
+    if (inObject(user.apps, req.body.appname)){
+      // app already exists
+      res.status(400).json("{error: AppName already exists}");
+    }
+    else {      
+      var str = req.body.appname.replace(/[^a-zA-Z0-9]/g, "");
+      var newApp = {
+        appid: str,
+        appname: req.body.appname,
+        appdesc: req.body.appdesc,
+        secret: req.body.secret
+      };
+  
+      user.apps.push(newApp);				
+      user.save(function(err, newUser) {
+        if (err)
+          res.status(400).send(err);
+        res.status(200).json(newUser);
+      });
+		}
+  });
+};
+
+exports.updateApp = function(req, res) {
+  
+  // Create new object
+  var newApp = {
+    appname: req.body.appname,
+    appdesc: req.body.apptype,
+    secret: req.body.secret
+  };
+
+  User.findOneAndUpdate(
+    {"username": req.params.user, "apps.appname": req.params.appname},
+    {"$set": {"apps.$": newApp}},    
+    function(err, newUser){
+			if (err) { 
+				res.status(400).send(err); 
+			}
+			res.status(200).json({"status":"successful"});  
+		}
+  );
+
+};
+
+
+// Delete App.  possibly double authentication for this?
+exports.deleteApp = function(req, res) {
+
+  // removes the single app with a $pull query, autosaving the result
+  User.update({"username": req.params.user},{ $pull: { "apps" : { appid: req.params.app }}}, function(err, user){
+    if (err)
+      res.status(400).send(err);
+    res.status(200).json({"status":"successful"});
+  });
+  
+  // remove collections created for this application.
+  db.collectionNames(function(err,collections){
+    if (err)
+      res.status(400).send(err);
+    
+    // String to compare collections to
+    var myService = "rest." + req.params.user + "." + req.params.app + ".";
+        
+
+
+// ***** TODO - ESCAPE THIS LOOP OR REWORK TO SEARCH THE ARRAY TO IMPROVE PERFORMANCE
+// *****    current code gets all collections in DB and removes based on comparing each coll name to the myService var.
+
+    // Loop through collection list to drop collections from DB. 
+    for (var x = 0; x < collections.length; x++) {
+      if (collections[x].name.indexOf(myService) > -1) {
+        
+        var tempColl = collections[x].name;
+        // trim off the "rest." db reference
+        tempColl = tempColl.toString().slice(5);
+        
+        var thisCollection = db.collection(tempColl);
+
+        thisCollection.drop(function(err, reply){
+          if (err) { res.status(500).send(err); }
+        });
+      }
+    }
+  });
+  
+};
+
+
+function inObject(arr, search) {
+  var len = arr.length;
+  while (len-- ) {
+    if(arr[len].appname === search)
+      return true;
+  }
+}

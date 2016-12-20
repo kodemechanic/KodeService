@@ -5,12 +5,24 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+var session = require('express-session');
+var passport = require('passport');
+var jwt = require('jwt-simple');
 
-var app = express();
+var mdb = require('./config/db/mongodb');
+var db  = require('./config/db/mongoose');
 
-// view engine setup
+var users = require('./routes/users');  
+var routes = require('./routes/index'); 
+var userAPI = require('./routes/userAPI');  
+var service = require('./routes/service');  
+var collection = require('./routes/collection');  
+var item = require('./routes/item');  
+
+var app = express(); 
+
+
+// view engine setup 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -22,8 +34,55 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/users', users);
+// initialize passport for authentication
+app.use(session({secret: 'mmaufcandkoding', resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configure database connection and pass to end points.
+mdb.init(function (error) {
+  if (error)
+    throw error;
+});
+
+app.use(function(req,res,next){
+    req.db = mdb;    
+    next();
+});
+
+
+//  CHECK PARAMETERS TO DETERMINE ROUTES
+app.param('user', function(req, res, next, user){  
+  req.puser = user;  /// TODO... may need to change these to parUser because passport overwrites req.user.
+  next();
+});
+
+app.param('service', function(req, res, next, service){  
+  req.pservice = service;
+  next();
+});
+
+app.param('collection', function(req, res, next, collection){  
+  req.pcollection = collection;
+  next();
+});
+
+app.param('item', function(req, res, next, item){  
+  req.pitem = item;  
+  next();
+});
+
+// Authentication Routes
+app.use('/user', users);  // login and logout functions here as well.
+app.use('/api', routes);  // reroute someone to instructions or home page.  login/logout here as well.
+app.use('/', routes);  // change to use the homepage link or redirect to the home page app....
+
+// API routes
+app.use('/api/:user/:service/:collection/:item', passport.authenticate('bearer',{session: false}), item);
+app.use('/api/:user/:service/:collection', passport.authenticate('bearer',{session: false}), collection);
+app.use('/api/:user/:service', passport.authenticate('bearer',{session: false}), service);
+app.use('/api/:user', passport.authenticate('bearer',{session: false}), userAPI);  // return a list of services.  GET only, service maintenance done in the Admin tool.
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
