@@ -1,9 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var async = require('async');
+
 var mongo = require('../config/db/mongodb.js');
 var mongoose = require('../config/db/mongoose.js');
+
 var User = require('../config/models/usermodel');
+
 var passport = require('../config/passport.js');
 
 
@@ -112,20 +115,29 @@ router.delete('/:username', passport.authenticate('bearer',{session: false}), fu
         }
         else {
 		    // String to compare collections to
-		    var myUserCollections = "rest." + req.username + ".";
+		    var myUserCollections = req.params.username + ".";
+
+        console.log("myuserCollextions: " + myUserCollections);
 	    
 // ***** TODO - ESCAPE THIS LOOP OR REWORK TO SEARCH THE ARRAY TO IMPROVE PERFORMANCE
 // *****    current code gets all collections in DB and removes based on comparing each coll name to the myUserCollections var.
 
 		    // Loop through collection list to drop collections from DB. 
 		    for (var x = 0; x < data.length; x++) {
-			    if (data[x].s.name.indexOf(myUserCollections) > -1) {
-			        
-			        var tempColl = collections[x].s.name;
+
+console.log("indexOf: " + data[x].s.name.indexOf(myUserCollections));
+
+			    if (data[x].s.name.indexOf(myUserCollections) == 0) {
+
+			 //       var tempColl = data[x].s.name.indexOf(myUserCollections);
 			        // trim off the "rest." db reference
-			        tempColl = tempColl.toString().slice(5);
+			   //     tempColl = tempColl.toString().slice(5);
 			        
-			        var thisCollection = mongo.client.collection(tempColl);
+//   *******   REMOVE!!!!
+console.log("REMOVING USER COLLECTIONS");
+
+
+			        var thisCollection = mongo.client.collection(data[x].s.name);
 
 			        thisCollection.drop(function(err, reply){
 			          if (err) { res.status(500).send({error: err}); }
@@ -233,14 +245,13 @@ router.delete('/:username/service/:servicename', passport.authenticate('bearer',
       res.status(400).send({error:err});
     
     // String to compare collections to
-    var myService = "rest." + req.username + "." + req.servicename + ".";
+    var myService = "." + req.username + "." + req.servicename + ".";
         
-
 
 // ***** TODO - ESCAPE THIS LOOP OR REWORK TO SEARCH THE ARRAY TO IMPROVE PERFORMANCE
 // *****    current code gets all collections in DB and removes based on comparing each coll name to the myService var.
 
-	
+	  
     // Loop through collection list to drop collections from DB. 
     for (var x = 0; x < collections.length; x++) {
       if (collections[x].s.name.indexOf(myService) > -1) {
@@ -248,7 +259,7 @@ router.delete('/:username/service/:servicename', passport.authenticate('bearer',
         var tempColl = collections[x].s.name;
         // trim off the "rest." db reference
         tempColl = tempColl.toString().slice(5);
-        
+
         var thisCollection = db.collection(tempColl);
 
         thisCollection.drop(function(err, reply){
@@ -297,6 +308,5 @@ function inObject(arr, search) {
       return true;
   }
 }
-
 
 module.exports = router;

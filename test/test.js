@@ -594,7 +594,7 @@ describe('Regression Testing -', function() {
   });
 
 
-// *********************   CLIENT     ***************************************************
+// *********************   CLIENT     ***************  DO WE EVEN NEED CLIENT WITHIN THIS APP????************************************
 /* REMOVED UNTIL CLIENT IS WORKING AGIN...
  describe('CLIENT TESTING', function(){
   
