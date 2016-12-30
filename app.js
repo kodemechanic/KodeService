@@ -52,7 +52,7 @@ app.use(function(req,res,next){
 
 //  CHECK PARAMETERS TO DETERMINE ROUTES
 app.param('user', function(req, res, next, user){  
-  req.puser = user;  /// TODO... may need to change these to parUser because passport overwrites req.user.
+  req.puser = user;  
   next();
 });
 

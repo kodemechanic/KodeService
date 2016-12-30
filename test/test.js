@@ -76,8 +76,8 @@ describe('Regression Testing -', function() {
 				});
 		});
   });   
-
 */
+
 
   describe('USER REGISTER AND LOGIN', function(){
 
