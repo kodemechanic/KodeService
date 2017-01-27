@@ -5,7 +5,7 @@ var passport = require('../config/passport.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.send('Please visit the Home Page for additional infomration on Creating an Account or accessing an available API.');  
+    res.render('index', { title: 'Hey', message: 'Hello there!' })
 });
 
 /* LOGIN TO API  */

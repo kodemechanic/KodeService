@@ -22,8 +22,7 @@
     "passport": "^0.3.2",
     "passport-http": "^0.3.0",
     "passport-http-bearer": "^1.0.1",
-    "jade": "~1.11.0",
-    "morgan": "~1.7.0",
+    "pug": "^2.0.0-beta9",
     "serve-favicon": "~2.3.0"
   }
 }
