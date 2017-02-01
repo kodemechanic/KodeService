@@ -13,6 +13,7 @@ var mdb = require('./config/db/mongodb');
 var db  = require('./config/db/mongoose');
 
 var users = require('./routes/users');  
+var dashboard = require('./routes/dashboard');
 var routes = require('./routes/index'); 
 var userAPI = require('./routes/userAPI');  
 var service = require('./routes/service');  
@@ -75,6 +76,9 @@ app.param('item', function(req, res, next, item){
 app.use('/user', users);  // login and logout functions here as well.
 app.use('/api', routes);  // reroute someone to instructions or home page.  login/logout here as well.
 app.use('/', routes);  // change to use the homepage link or redirect to the home page app....
+
+// User Dashoard
+app.use('/dashboard', passport.authenticate('bearer',{session: false}), dashboard);
 
 // API routes
 app.use('/api/:user/:service/:collection/:item', passport.authenticate('bearer',{session: false}), item);
