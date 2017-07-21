@@ -15,7 +15,7 @@ var db  = require('./config/db/mongoose');
 var users = require('./routes/users');  
 var dashboard = require('./routes/dashboard');
 var routes = require('./routes/index'); 
-var userAPI = require('./routes/userAPI');  
+var authAPI = require('./routes/authAPI');  
 var service = require('./routes/service');  
 var collection = require('./routes/collection');  
 var item = require('./routes/item');  
@@ -83,16 +83,15 @@ app.use(function (req, res, next){
 // User Dashoard
 app.use('/dashboard', dashboard);
 app.use('/user', users);  // login and logout functions here as well.
-app.use('/api', routes);  // reroute someone to instructions or home page.  login/logout here as well.
+app.use('/api', authAPI);  // reroute someone to instructions or home page.  login/logout here as well.
 app.use('/', routes);  // change to use the homepage link or redirect to the home page app....
-
 
 
 // API routes
 app.use('/api/:user/:service/:collection/:item', passport.authenticate('bearer',{session: false}), item);
 app.use('/api/:user/:service/:collection', passport.authenticate('bearer',{session: false}), collection);
 app.use('/api/:user/:service', passport.authenticate('bearer',{session: false}), service);
-app.use('/api/:user', passport.authenticate('bearer',{session: false}), userAPI);  // return a list of services.  GET only, service maintenance done in the Admin tool.
+app.use('/api/:user', passport.authenticate('bearer',{session: false}), authAPI);  // return a list of services.  GET only, service maintenance done in the Admin tool.
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

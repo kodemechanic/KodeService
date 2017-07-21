@@ -821,8 +821,10 @@ res.body.success.should.equal(false);
           if (err) {
             throw err;            
           }
+
+//console.log(res.body);
           
-          LucyItemID = res.body.results.insertedIds;
+          LucyItemID = res.body.result.insertedIds;
           
           done();
         });
@@ -847,7 +849,7 @@ res.body.success.should.equal(false);
               throw err;
             }
             
-            JackItemID = res.body.results.insertedIds;
+            JackItemID = res.body.result.insertedIds;
             
             done();
           });

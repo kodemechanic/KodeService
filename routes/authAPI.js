@@ -4,7 +4,7 @@ var async = require('async');
 var mongo = require('../config/db/mongodb.js');
 var mongoose = require('../config/db/mongoose.js');
 var User = require('../config/models/usermodel');
-
+var passport = require('../config/passport.js');
 
 router.get('/', function(req,res){	
 	// Possibly change this to check for more than one and require a find by ID if more than one user available.
@@ -18,6 +18,10 @@ router.get('/', function(req,res){
       res.status(200).send({results: services});
     }      
   });		
+});
+
+router.post('/authenticate', passport.authenticate('api-basic',{session: false}), function(req,res){
+	res.status(200).send({success: true, results: res.req.user, message: "Login Successful."});
 });
 
 router.post('/', function(req,res){
