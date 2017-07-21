@@ -10,35 +10,13 @@ var User = require('../config/models/usermodel');
 var passport = require('../config/passport.js');
 
 
-
-router.param('username', function(req, res, next, username){  
-  req.username = username;    
-  next();
+//  **********   Dashboard  ********************
+router.get('/', function(req, res){
+	res.render('dashboard', {title: "Dashboard"});
 });
 
-router.param('servicename', function(req, res, next, servicename){  
-  req.servicename = servicename;
-  next();
+router.get('/:oState', function(req, res){
+  res.render('dashboard', {openState: req.params.oState, title: "Dashboard"});  
 });
- 
-
-
-//  **********   LOGIN and LOGOUT  ********************
-
-router.post('/authenticate', passport.authenticate('user-basic',{session: false}),function(req,res){    
-    res.status(200).send(res.req.user);  
-});
-
-
-//  **************   USER FUNCTIONS *****************
-/* GET users listing. */
-router.get('/', passport.authenticate('bearer',{session: false}), function(req, res) {
-    User.find(function(err, users) {
-    	if (err) {  res.status(400).send(err);	}    	
-    	res.status(200).send({results: users});
-  	});
-});
-
-
 
 module.exports = router;

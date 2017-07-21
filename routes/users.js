@@ -25,8 +25,8 @@ router.param('servicename', function(req, res, next, servicename){
 
 //  **********   LOGIN and LOGOUT  ********************
 
-router.post('/authenticate', passport.authenticate('user-basic',{session: false}),function(req,res){    
-    res.status(200).send(res.req.user);  
+router.post('/authenticate', passport.authenticate('user-basic',{session: false}),function(req,res){        
+    res.status(200).send({success: true, results: res.req.user, message: "Login Successful.  Opening Dashboard..."});    
 });
 
 
@@ -54,13 +54,20 @@ router.get('/:username', passport.authenticate('bearer',{session: false}), funct
 });
 
 router.post('/', function(req,res){
-	// CREATE NEW USER FROM POST to /users/		
+	// CREATE NEW USER FROM POST to /users/	
+ 
+ // Check for matching passwords.
+  if (req.body.password != req.body.password2) {
+    res.status(200).send({success:false,errors:{password: "Passwords do not match."}});
+  } else {
+    // check for duplicate user
   	var collection = mongo.client.collection('users');
     collection.findOne({"username": req.body.username}, function(err, existing){
-  		if (err) { res.status(400).send({error: err}); }
-
-  		if (!existing) {
-  			var str = req.body.username.replace(/[^a-zA-Z0-9]/g, "");
+  		if (err) { 
+        res.status(200).send({success:false,errors:err});
+      }
+      if (!existing) {
+  	    var str = req.body.username.replace(/[^a-zA-Z0-9]/g, "");
   			var user = new User({
 		        username: req.body.username,
 		        password: req.body.password,
@@ -72,18 +79,21 @@ router.post('/', function(req,res){
 		    // TODO... ADD CODE TO CHECK FOR DUPLICATE EMAIL ADDRESSES.  						
 		    user.save(function(err, newUser) {
 		        if (err){
-		          res.status(400).send(err); 
+              if (err.code == 11000) {
+                res.status(200).send({success:false, errors:{email:"This email address is already in use.", err: err}});
+              } else {
+		            res.status(200).send({success:false, errors:err});
+              }
 		        } else {
-		          res.status(200).send({results: newUser});
+		          res.status(200).send({success: true, results: newUser, message: "User Created Successfully."});              
 		        }
 		    });
-		}  // if !existing
-		else {
-		    res.status(400).send({"status": "duplicate username"});
-		};
-  		
+		  }  // else if !existing
+		  else {
+		    res.status(200).send({success: false, errors: {username:"Username already exists."}});        
+		  };  		
   	});
-
+  }
 });
 
 

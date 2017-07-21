@@ -1,23 +1,26 @@
-div(class='modal', id='id01')
-  form(class='modal-content animate', action='user/authenticate', method='post', style='max-width:600px')
+div(class='modal', id='id01')  
+  form(class='modal-content animate', id='logform', method='post', style='max-width:600px;', ng-submit="login()")
     div(class='imgcontainer')
       span(onclick='document.getElementById("id01").style.display="none"', class='close', title='Close Modal') &times;
       img(src='http://kodemechanic.com/content/images/2017/01/avatar2.png', alt='Avatar', class='avatar', style='max-width:150px')
 
+    div(class='container', id='messages', ng-show='message') {{ LoginMessage }}
+
     div(class='container')      
-      label:b Username
-      input(type='text', placeholder='Enter UserName', name='username', required)
-      label:b Password
-      input(type='password', placeholder='Enter Password', name='password', required)
+      div(id="name-group" class="form-group" ng-class="{ 'has-error' : errorLoginUsername }")
+        label:b Username
+        span(class='help-block', style='float:right; color:red;', ng-show='errorLoginUsername') {{ errorLoginUsername }}
+        input(type='text', placeholder='Enter UserName', name='username', id='username', ng-model='loginFormData.username', required)
+
+      div(id="name-group" class="form-group" ng-class="{ 'has-error' : errorLoginPassword }")
+        label:b Password
+        input(type='password', placeholder='Enter Password', name='password', id='password',  ng-model='loginFormData.password', required)        
+        span(class='help-block', style='float:right; color:red;', ng-show='errorLoginPassword') {{ errorLoginPassword }}
+
       button(type='submit') Login
 
-      div(class=container, style'background-color:#dfe5ef;')
-      br
-      span New to KodeAPI?
-      button(type='button', onclick='signup()') Signup
-    div(class='container', style='background-color:#f1f1f1')
-      button(type='button', onclick='document.getElementById("id01").style.display="none"', class='cancelbtn') Cancel
       span(class='psw')
         a(href='#') Forgot password
 
-script(src="/javascripts/loginmodal.js")
+      span New to KodeAPI? 
+        a(href='#') Signup Here      

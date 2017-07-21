@@ -85,6 +85,7 @@ describe('Regression Testing -', function() {
 			var profile = {
 				username: username,
 				password: password,
+				password2: password,
 				email: 'test@test.com'
 			};
 			
@@ -108,6 +109,7 @@ describe('Regression Testing -', function() {
 			var profile = {
 				username: username2,
 				password: password2,
+				password2: password2,
 				email: 'test2@test.com'
 			};
 			
@@ -153,7 +155,8 @@ describe('Regression Testing -', function() {
 					if (err) {
 						throw err;
 					}
-			        userLoginToken = "Bearer " + res.body.token;  
+			        userLoginToken = "Bearer " + res.body.results.token;  
+//console.log(res.body.results.token);
 					done();
 				});
 		});   
@@ -165,10 +168,10 @@ describe('Regression Testing -', function() {
 				.auth(username2,password2)
 				.expect(200)				
 				.end(function(err, res){
-					if (err) {
+				if (err) {
 						throw err;
 					}
-			        userLoginToken2 = "Bearer " + res.body.token;  
+			        userLoginToken2 = "Bearer " + res.body.results.token;  
 					done();
 				});
 		});   
@@ -179,14 +182,18 @@ describe('Regression Testing -', function() {
 		it('Return a specific user', function(done){
 			
 			var dPath = "/user/" + username;
-			
+		
+//console.log(dPath);
+//console.log(userLoginToken);
+	
 			request(url)
 				.get(dPath)  
 				.set('Authorization', userLoginToken)      
 				.expect(200)        
 				.expect('Content-Type', /json/)  
 				.end(function(err, res){				
-      		res.body.should.have.property('results');
+//		      		console.log(res.body.results);
+				res.body.should.have.property('results');
 					res.body.results.username.should.equal('mochatest');
 					if (err) {
 						throw err;
@@ -229,18 +236,20 @@ describe('Regression Testing -', function() {
 			var profile = {
 				username: 'mochatest',
 				password: 'test1',
+				password2: 'test1',
 				email: 'test1@test.com'
 			};
 						
 			request(url)
 				.post('/user')
 				.send(profile)
-				.expect(400)        
+				.expect(200)
 				.end(function(err, res){
 					if (err) {
 						throw err;
 					}
-					
+					res.body.should.have.property('success');
+res.body.success.should.equal(false);	
 					done();
 				});
 		});    
@@ -772,7 +781,7 @@ describe('Regression Testing -', function() {
           if (err) {            
             throw err;
           }          
-          userAPIToken = "Bearer " + res.body.token;          
+          userAPIToken = "Bearer " + res.body.results.token;          
           done();
         });      
     });
@@ -788,7 +797,7 @@ describe('Regression Testing -', function() {
           if (err) {            
             throw err;
           }          
-          userAPIToken2 = "Bearer " + res.body.token;          
+          userAPIToken2 = "Bearer " + res.body.results.token;          
           done();
         });      
     });
@@ -813,7 +822,7 @@ describe('Regression Testing -', function() {
             throw err;            
           }
           
-          LucyItemID = res.body.result.insertedIds;
+          LucyItemID = res.body.results.insertedIds;
           
           done();
         });
@@ -838,7 +847,7 @@ describe('Regression Testing -', function() {
               throw err;
             }
             
-            JackItemID = res.body.result.insertedIds;
+            JackItemID = res.body.results.insertedIds;
             
             done();
           });

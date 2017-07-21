@@ -50,8 +50,8 @@ var UserSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
-    unique: true
+    required: true
+//    unique: true     //fails creation for duplicate emails.  need to account for this in USERS.JS
   },
   userid: {
     type: String,

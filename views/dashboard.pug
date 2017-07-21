@@ -2,7 +2,16 @@ doctype html
 html
   head
     include head.pug
-  body
-    include navigation2.pug
+    title= title
+  body(ng-app="formApp", ng-controller="formController")
+    script(type='text/javascript').
+      var openState = "#{openState}";    
+    include dashnav.pug
+    include login.pug
+    include signup.pug
     include dashbody.pug
     include foot.pug
+script(src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js")
+script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js")
+script(src="/javascripts/login.js")
+script(src="/javascripts/dashboard.js")

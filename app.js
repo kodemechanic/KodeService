@@ -72,13 +72,21 @@ app.param('item', function(req, res, next, item){
   next();
 });
 
+app.use(function (req, res, next){
+  res.setHeader('Access-Control-Allow-Origin', 'http://www.kodemechanic.com:8080');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization');
+  next();
+});
+
 // Authentication Routes
+// User Dashoard
+app.use('/dashboard', dashboard);
 app.use('/user', users);  // login and logout functions here as well.
 app.use('/api', routes);  // reroute someone to instructions or home page.  login/logout here as well.
 app.use('/', routes);  // change to use the homepage link or redirect to the home page app....
 
-// User Dashoard
-app.use('/dashboard', passport.authenticate('bearer',{session: false}), dashboard);
+
 
 // API routes
 app.use('/api/:user/:service/:collection/:item', passport.authenticate('bearer',{session: false}), item);

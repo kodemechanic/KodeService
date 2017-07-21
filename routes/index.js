@@ -5,13 +5,7 @@ var passport = require('../config/passport.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Hey', message: 'Hello there!' })
-});
-
-/* LOGIN TO API  */
-
-router.post('/authenticate', passport.authenticate('api-basic',{session: false}),function(req,res){    
-    res.status(200).send(res.req.user);  
+    res.render('index', { title: 'KodeMechanic KodeAPI'})
 });
 
 module.exports = router;

@@ -1,0 +1,26 @@
+div(class='modal', id='id02')
+  form(class='modal-content animate', id='subform', method='post', style='max-width:600px;', ng-submit="signUp()")
+    div(class='imgcontainer')
+      span(onclick='document.getElementById("id02").style.display="none"', class='close', title='Close Modal', style="right:15px;top:-25px;") &times; 
+
+    div(class='container', id='messages', ng-show='message') {{ message }}
+    div(class='container') 
+      
+      div(id="name-group" class="form-group" ng-class="{ 'has-error' : errorUsername }")
+        label:b Username
+        span(class='help-block', style='float:right; color:red;', ng-show='errorUsername') {{ errorUsername }}
+        input(type='text', placeholder='Enter UserName', name='username', id='username', ng-model='formData.username', required)
+        
+      div(id="name-group" class="form-group" ng-class="{ 'has-error' : errorEmail }")      
+        label:b Email
+        span(class='help-block', style='float:right; color:red;', ng-show='errorEmail') {{ errorEmail }}        
+        input(type='text', placeholder='Enter Email Address', id='email', name='email', ng-model='formData.email', required)
+        
+      div(id="name-group" class="form-group" ng-class="{ 'has-error' : errorPassword }")
+        label:b Password
+        input(type='password', placeholder='Enter Password', name='password', id='password',  ng-model='formData.password', required)
+        label:b Repeat Password
+        span(class='help-block', style='float:right; color:red;', ng-show='errorPassword') {{ errorPassword }}
+        input(type='password', placeholder='Repeat Password', name='password2', id='password2',  ng-model='formData.password2',required)
+        button(type='submit') Signup
+

@@ -1,0 +1,26 @@
+{
+  "pidPath": "/var/www/KodeService/forever/.forever/pids",
+  "sockPath": "/var/www/KodeService/forever/.forever/sock",
+  "loglength": 100,
+  "append": true,
+  "logfile": "/var/www/KodeService/forever/forever.log",
+  "errfile": "/var/www/KodeService/forever/forever.err",
+  "outfile": "/var/www/KodeService/forever/forever.out",
+  "watch": true,
+  "watchDirectory": "/var/www/KodeService",
+  "debug": true,
+  "verbose": true,
+  "script": "/bin/www",
+  "columns": [
+    "uid",
+    "command",
+    "script",
+    "forever",
+    "pid",
+    "id",
+    "logfile",
+    "uptime"
+  ],
+  "logstream": false,
+  "root": "/var/www/KodeService"
+}
